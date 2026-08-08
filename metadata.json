@@ -1,0 +1,92 @@
+{
+  "name": "DeFi Protocol Risk Metrics",
+  "description": "Comprehensive risk metrics dataset for decentralized finance protocols, including smart contract vulnerabilities, protocol health scores, and security classifications.",
+  "record_count": 3000,
+  "sample_size": 100,
+  "price": "$49",
+  "currency": "USD",
+  "license": "CC-BY-SA-4.0",
+  "tags": [
+    "defi",
+    "blockchain",
+    "security",
+    "risk",
+    "smart-contracts"
+  ],
+  "fields": [
+    {
+      "name": "id",
+      "type": "string",
+      "description": "Field: id"
+    },
+    {
+      "name": "category",
+      "type": "string",
+      "description": "Field: category"
+    },
+    {
+      "name": "severity",
+      "type": "string",
+      "description": "Field: severity"
+    },
+    {
+      "name": "title",
+      "type": "string",
+      "description": "Field: title"
+    },
+    {
+      "name": "description",
+      "type": "string",
+      "description": "Field: description"
+    },
+    {
+      "name": "vulnerable_code",
+      "type": "string",
+      "description": "Field: vulnerable_code"
+    },
+    {
+      "name": "fixed_code",
+      "type": "string",
+      "description": "Field: fixed_code"
+    },
+    {
+      "name": "fix_pattern",
+      "type": "string",
+      "description": "Field: fix_pattern"
+    },
+    {
+      "name": "language",
+      "type": "string",
+      "description": "Field: language"
+    },
+    {
+      "name": "compiler_version",
+      "type": "string",
+      "description": "Field: compiler_version"
+    },
+    {
+      "name": "context",
+      "type": "string",
+      "description": "Field: context"
+    },
+    {
+      "name": "is_synthetic",
+      "type": "string",
+      "description": "Field: is_synthetic"
+    },
+    {
+      "name": "generation_timestamp",
+      "type": "string",
+      "description": "Field: generation_timestamp"
+    },
+    {
+      "name": "variant_seed",
+      "type": "string",
+      "description": "Field: variant_seed"
+    }
+  ],
+  "source": "Synthetic / Curated",
+  "created": "2026-08-08",
+  "contact": "manteclaw@proton.me",
+  "store_url": "https://manteclaw.gumroad.com"
+}
