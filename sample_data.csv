@@ -1,0 +1,806 @@
+id,category,severity,title,description,vulnerable_code,fixed_code,fix_pattern,language,compiler_version,context,is_synthetic,generation_timestamp,variant_seed
+SYNTH-00001451-00019,front_running,medium,Front Running in money_market contract (variant 1451),Integer overflow in money_market balance calculation,"function addBalance(uint256 amount) public {
+    balance += amount;
+}","function addBalance(uint256 amount) public {
+    uint256 newBalance = balance + amount;
+    require(newBalance >= balance, ""Overflow"");
+    balance = newBalance;
+}",secure-pattern,solidity,0.8.22,money_market,True,2026-08-08T00:01:52.555828+00:00,1451
+SYNTH-00009496-00056,front_running,critical,Front Running in staking contract (variant 9496),Delegatecall vulnerability in staking proxy pattern,"// Variant 9496: staking
+function upgrade(address newImplementation) public {
+    implementation = newImplementation;
+}","function upgrade(address newImplementation) public onlyOwner {
+    require(newImplementation != address(0), ""Zero address"");
+    require(Address.isContract(newImplementation), ""Not a contract"");
+    implementation = newImplementation;
+}",secure-pattern,solidity,0.8.19,staking,True,2026-08-08T00:01:52.427301+00:00,9496
+SYNTH-00005560-00002,arbitrary_external_call,medium,Arbitrary External Call in options contract (variant 5560),Unprotected selfdestruct in options contract,"// Variant 5560: options
+function destroy() public {
+    selfdestruct(payable(msg.sender));
+}","function destroy() public onlyOwner {
+    emit ContractDestroyed(address(this));
+    selfdestruct(payable(owner));
+}",secure-pattern,solidity,0.8.19,options,True,2026-08-08T00:01:52.416297+00:00,5560
+SYNTH-00000232-00026,proxy_storage_collision,medium,Proxy Storage Collision in insurance contract (variant 232),tx.origin authentication bypass in insurance,"function transferOwnership(address newOwner) public {
+    require(tx.origin == owner, ""Not owner"");
+    owner = newOwner;
+}","function transferOwnership(address newOwner) public onlyOwner {
+    require(newOwner != address(0), ""Zero address"");
+    emit OwnershipTransferred(owner, newOwner);
+    owner = newOwner;
+}",secure-pattern,solidity,0.8.19,insurance,True,2026-08-08T00:01:52.448303+00:00,232
+SYNTH-00007098-00003,reentrancy_read,high,Reentrancy Read in lending contract (variant 7098),Flash loan attack vector in lending price calculation,"function getCollateralValue() public view returns (uint256) {
+    return balanceOfPool * getPrice();
+}","// Variant 7098: lending
+function getCollateralValue() public view returns (uint256) {
+    (uint256 reserve0, uint256 reserve1, ) = pool.getReserves();
+    uint256 twapPrice = TWAP.getPrice(reserve0, reserve1);
+    return Math.min(balanceOfPool, reserve0) * twapPrice / 1e18;
+}",pull-over-push,solidity,0.8.19,lending,True,2026-08-08T00:01:52.443300+00:00,7098
+SYNTH-00009941-00014,reentrancy_no_eth,low,Reentrancy No Eth in options contract (variant 9941),Single-source price oracle vulnerable to manipulation in options,"function getPrice() public view returns (uint256) {
+    return spotPrice;
+}","function getPrice() public view returns (uint256) {
+    (uint256 reserve0, uint256 reserve1, ) = pool.getReserves();
+    return reserve0 * 1e18 / reserve1;
+}",pull-over-push,solidity,0.8.19,options,True,2026-08-08T00:01:52.441300+00:00,9941
+SYNTH-00005942-00071,access_control,critical,Access Control in staking contract (variant 5942),Delegatecall vulnerability in staking proxy pattern,"// Variant 5942: staking
+function upgrade(address newImplementation) public {
+    implementation = newImplementation;
+}","function upgrade(address newImplementation) public onlyOwner {
+    require(newImplementation != address(0), ""Zero address"");
+    require(Address.isContract(newImplementation), ""Not a contract"");
+    implementation = newImplementation;
+}",secure-pattern,solidity,0.8.22,staking,True,2026-08-08T00:01:52.430301+00:00,5942
+SYNTH-00004358-00019,signature_replay,low,Signature Replay in bridge contract (variant 4358),Delegatecall vulnerability in bridge proxy pattern,"// Variant 4358: bridge
+function upgrade(address newImplementation) public {
+    implementation = newImplementation;
+}","function upgrade(address newImplementation) public onlyOwner {
+    require(newImplementation != address(0), ""Zero address"");
+    require(Address.isContract(newImplementation), ""Not a contract"");
+    implementation = newImplementation;
+}",secure-pattern,solidity,0.8.20,bridge,True,2026-08-08T00:01:52.426301+00:00,4358
+SYNTH-00000232-00071,proxy_storage_collision,medium,Proxy Storage Collision in insurance contract (variant 232),tx.origin authentication bypass in insurance,"function transferOwnership(address newOwner) public {
+    require(tx.origin == owner, ""Not owner"");
+    owner = newOwner;
+}","function transferOwnership(address newOwner) public onlyOwner {
+    require(newOwner != address(0), ""Zero address"");
+    emit OwnershipTransferred(owner, newOwner);
+    owner = newOwner;
+}",secure-pattern,solidity,0.8.19,insurance,True,2026-08-08T00:01:52.624344+00:00,232
+SYNTH-00006143-00033,integer_overflow,medium,Integer Overflow in dex contract (variant 6143),integer_overflow vulnerability in dex contract allows unauthorized access,"function withdraw() public {
+    uint256 amount = balances[msg.sender];
+    (bool success, ) = msg.sender.call{value: amount}("""");
+    require(success);
+    balances[msg.sender] = 0;
+}","function withdraw() public nonReentrant {
+    uint256 amount = balances[msg.sender];
+    require(amount > 0, ""No balance"");
+    balances[msg.sender] = 0;
+    (bool success, ) = msg.sender.call{value: amount}("""");
+    require(success, ""Transfer failed"");
+}",secure-pattern,solidity,0.8.22,dex,True,2026-08-08T00:01:52.543820+00:00,6143
+SYNTH-00005780-00056,proxy_storage_collision,critical,Proxy Storage Collision in escrow contract (variant 5780),Flash loan attack vector in escrow price calculation,"function getCollateralValue() public view returns (uint256) {
+    return balanceOfPool * getPrice();
+}","// Variant 5780: escrow
+function getCollateralValue() public view returns (uint256) {
+    (uint256 reserve0, uint256 reserve1, ) = pool.getReserves();
+    uint256 twapPrice = TWAP.getPrice(reserve0, reserve1);
+    return Math.min(balanceOfPool, reserve0) * twapPrice / 1e18;
+}",secure-pattern,solidity,0.8.20,escrow,True,2026-08-08T00:01:52.424301+00:00,5780
+SYNTH-00000232-00018,proxy_storage_collision,medium,Proxy Storage Collision in insurance contract (variant 232),tx.origin authentication bypass in insurance,"function transferOwnership(address newOwner) public {
+    require(tx.origin == owner, ""Not owner"");
+    owner = newOwner;
+}","function transferOwnership(address newOwner) public onlyOwner {
+    require(newOwner != address(0), ""Zero address"");
+    emit OwnershipTransferred(owner, newOwner);
+    owner = newOwner;
+}",secure-pattern,solidity,0.8.19,insurance,True,2026-08-08T00:01:52.549828+00:00,232
+SYNTH-00009496-00028,front_running,critical,Front Running in staking contract (variant 9496),Delegatecall vulnerability in staking proxy pattern,"// Variant 9496: staking
+function upgrade(address newImplementation) public {
+    implementation = newImplementation;
+}","function upgrade(address newImplementation) public onlyOwner {
+    require(newImplementation != address(0), ""Zero address"");
+    require(Address.isContract(newImplementation), ""Not a contract"");
+    implementation = newImplementation;
+}",secure-pattern,solidity,0.8.19,staking,True,2026-08-08T00:01:52.496819+00:00,9496
+SYNTH-00006414-00030,reentrancy_eth,high,Reentrancy Eth in escrow contract (variant 6414),Unchecked external call in escrow allows reentrancy,"function execute(address target, bytes memory data) public {
+    target.call(data);
+}","function execute(address target, bytes memory data) public onlyRole(EXECUTOR_ROLE) nonReentrant {
+    (bool success, bytes memory result) = target.call(data);
+    require(success, string(result));
+}",pull-over-push,solidity,0.8.22,escrow,True,2026-08-08T00:01:52.417299+00:00,6414
+SYNTH-00007118-00022,integer_overflow,high,Integer Overflow in governance contract (variant 7118),tx.origin authentication bypass in governance,"// Variant 7118: governance
+function transferOwnership(address newOwner) public {
+    require(tx.origin == owner, ""Not owner"");
+    owner = newOwner;
+}","function transferOwnership(address newOwner) public onlyOwner {
+    require(newOwner != address(0), ""Zero address"");
+    emit OwnershipTransferred(owner, newOwner);
+    owner = newOwner;
+}",secure-pattern,solidity,0.8.19,governance,True,2026-08-08T00:01:52.417299+00:00,7118
+SYNTH-00007441-00083,reentrancy_read,critical,Reentrancy Read in dex contract (variant 7441),reentrancy_read vulnerability in dex contract allows unauthorized access,"// Variant 7441: dex
+function withdraw() public {
+    uint256 amount = balances[msg.sender];
+    (bool success, ) = msg.sender.call{value: amount}("""");
+    require(success);
+    balances[msg.sender] = 0;
+}","// Variant 7441: dex
+function withdraw() public nonReentrant {
+    uint256 amount = balances[msg.sender];
+    require(amount > 0, ""No balance"");
+    balances[msg.sender] = 0;
+    (bool success, ) = msg.sender.call{value: amount}("""");
+    require(success, ""Transfer failed"");
+}",checks-effects-interactions,solidity,0.8.19,dex,True,2026-08-08T00:01:52.425300+00:00,7441
+SYNTH-00002964-00095,approval_race_condition,low,Approval Race Condition in yield_farming contract (variant 2964),Unprotected selfdestruct in yield_farming contract,"function destroy() public {
+    selfdestruct(payable(msg.sender));
+}","// Variant 2964: yield_farming
+function destroy() public onlyOwner {
+    emit ContractDestroyed(address(this));
+    selfdestruct(payable(owner));
+}",secure-pattern,solidity,0.8.22,yield_farming,True,2026-08-08T00:01:52.440304+00:00,2964
+SYNTH-00009491-00052,reentrancy_no_eth,medium,Reentrancy No Eth in options contract (variant 9491),Flash loan attack vector in options price calculation,"// Variant 9491: options
+function getCollateralValue() public view returns (uint256) {
+    return balanceOfPool * getPrice();
+}","function getCollateralValue() public view returns (uint256) {
+    (uint256 reserve0, uint256 reserve1, ) = pool.getReserves();
+    uint256 twapPrice = TWAP.getPrice(reserve0, reserve1);
+    return Math.min(balanceOfPool, reserve0) * twapPrice / 1e18;
+}",reentrancy-guard,solidity,0.8.19,options,True,2026-08-08T00:01:52.442300+00:00,9491
+SYNTH-00008716-00069,delegatecall_bugs,medium,Delegatecall Bugs in perpetual contract (variant 8716),tx.origin authentication bypass in perpetual,"function transferOwnership(address newOwner) public {
+    require(tx.origin == owner, ""Not owner"");
+    owner = newOwner;
+}","function transferOwnership(address newOwner) public onlyOwner {
+    require(newOwner != address(0), ""Zero address"");
+    emit OwnershipTransferred(owner, newOwner);
+    owner = newOwner;
+}",secure-pattern,solidity,0.8.19,perpetual,True,2026-08-08T00:01:52.506820+00:00,8716
+SYNTH-00007441-00065,reentrancy_read,critical,Reentrancy Read in dex contract (variant 7441),reentrancy_read vulnerability in dex contract allows unauthorized access,"// Variant 7441: dex
+function withdraw() public {
+    uint256 amount = balances[msg.sender];
+    (bool success, ) = msg.sender.call{value: amount}("""");
+    require(success);
+    balances[msg.sender] = 0;
+}","// Variant 7441: dex
+function withdraw() public nonReentrant {
+    uint256 amount = balances[msg.sender];
+    require(amount > 0, ""No balance"");
+    balances[msg.sender] = 0;
+    (bool success, ) = msg.sender.call{value: amount}("""");
+    require(success, ""Transfer failed"");
+}",checks-effects-interactions,solidity,0.8.19,dex,True,2026-08-08T00:01:52.550829+00:00,7441
+SYNTH-00005067-00008,sandwich_attack,low,Sandwich Attack in lending contract (variant 5067),Flash loan attack vector in lending price calculation,"function getCollateralValue() public view returns (uint256) {
+    return balanceOfPool * getPrice();
+}","// Variant 5067: lending
+function getCollateralValue() public view returns (uint256) {
+    (uint256 reserve0, uint256 reserve1, ) = pool.getReserves();
+    uint256 twapPrice = TWAP.getPrice(reserve0, reserve1);
+    return Math.min(balanceOfPool, reserve0) * twapPrice / 1e18;
+}",secure-pattern,solidity,0.8.20,lending,True,2026-08-08T00:01:52.416297+00:00,5067
+SYNTH-00004626-00098,flash_loan_attack,medium,Flash Loan Attack in bridge contract (variant 4626),Signature replay attack in bridge permit function,"function permit(address owner, uint256 amount, bytes memory sig) public {
+    require(verify(sig, owner), ""Invalid sig"");
+    allowance[owner][msg.sender] = amount;
+}","// Variant 4626: bridge
+function permit(address owner, address spender, uint256 amount, uint256 deadline, uint8 v, bytes32 r, bytes32 s) public {
+    require(block.timestamp <= deadline, ""Expired"");
+    bytes32 hash = keccak256(abi.encodePacked(owner, spender, amount, nonces[owner]++, deadline));
+    require(ecrecover(hash, v, r, s) == owner, ""Invalid sig"");
+    _approve(owner, spender, amount);
+}",secure-pattern,solidity,0.8.20,bridge,True,2026-08-08T00:01:52.545820+00:00,4626
+SYNTH-00004358-00014,signature_replay,low,Signature Replay in bridge contract (variant 4358),Delegatecall vulnerability in bridge proxy pattern,"// Variant 4358: bridge
+function upgrade(address newImplementation) public {
+    implementation = newImplementation;
+}","function upgrade(address newImplementation) public onlyOwner {
+    require(newImplementation != address(0), ""Zero address"");
+    require(Address.isContract(newImplementation), ""Not a contract"");
+    implementation = newImplementation;
+}",secure-pattern,solidity,0.8.20,bridge,True,2026-08-08T00:01:52.438305+00:00,4358
+SYNTH-00005560-00032,arbitrary_external_call,medium,Arbitrary External Call in options contract (variant 5560),Unprotected selfdestruct in options contract,"// Variant 5560: options
+function destroy() public {
+    selfdestruct(payable(msg.sender));
+}","function destroy() public onlyOwner {
+    emit ContractDestroyed(address(this));
+    selfdestruct(payable(owner));
+}",secure-pattern,solidity,0.8.19,options,True,2026-08-08T00:01:52.628345+00:00,5560
+SYNTH-00003504-00061,unchecked_send,low,Unchecked Send in nft_marketplace contract (variant 3504),Integer overflow in nft_marketplace balance calculation,"// Variant 3504: nft_marketplace
+function addBalance(uint256 amount) public {
+    balance += amount;
+}","function addBalance(uint256 amount) public {
+    uint256 newBalance = balance + amount;
+    require(newBalance >= balance, ""Overflow"");
+    balance = newBalance;
+}",secure-pattern,solidity,0.8.22,nft_marketplace,True,2026-08-08T00:01:52.620342+00:00,3504
+SYNTH-00002771-00072,integer_overflow,high,Integer Overflow in dao contract (variant 2771),integer_overflow vulnerability in dao contract allows unauthorized access,"function withdraw() public {
+    uint256 amount = balances[msg.sender];
+    (bool success, ) = msg.sender.call{value: amount}("""");
+    require(success);
+    balances[msg.sender] = 0;
+}","// Variant 2771: dao
+function withdraw() public nonReentrant {
+    uint256 amount = balances[msg.sender];
+    require(amount > 0, ""No balance"");
+    balances[msg.sender] = 0;
+    (bool success, ) = msg.sender.call{value: amount}("""");
+    require(success, ""Transfer failed"");
+}",secure-pattern,solidity,0.8.21,dao,True,2026-08-08T00:01:52.626345+00:00,2771
+SYNTH-00006172-00032,tx_origin_auth,high,Tx Origin Auth in payment_splitter contract (variant 6172),Missing access control on payment_splitter critical function,"// Variant 6172: payment_splitter
+function mint(address to, uint256 amount) public {
+    _mint(to, amount);
+}","function mint(address to, uint256 amount) public onlyRole(MINTER_ROLE) {
+    require(to != address(0), ""Invalid address"");
+    _mint(to, amount);
+}",secure-pattern,solidity,0.8.22,payment_splitter,True,2026-08-08T00:01:52.543820+00:00,6172
+SYNTH-00006414-00018,reentrancy_eth,high,Reentrancy Eth in escrow contract (variant 6414),Unchecked external call in escrow allows reentrancy,"function execute(address target, bytes memory data) public {
+    target.call(data);
+}","function execute(address target, bytes memory data) public onlyRole(EXECUTOR_ROLE) nonReentrant {
+    (bool success, bytes memory result) = target.call(data);
+    require(success, string(result));
+}",pull-over-push,solidity,0.8.22,escrow,True,2026-08-08T00:01:52.496819+00:00,6414
+SYNTH-00001149-00002,erc777_reentrancy,medium,Erc777 Reentrancy in money_market contract (variant 1149),Unchecked external call in money_market allows reentrancy,"function execute(address target, bytes memory data) public {
+    target.call(data);
+}","// Variant 1149: money_market
+function execute(address target, bytes memory data) public onlyRole(EXECUTOR_ROLE) nonReentrant {
+    (bool success, bytes memory result) = target.call(data);
+    require(success, string(result));
+}",secure-pattern,solidity,0.8.20,money_market,True,2026-08-08T00:01:52.440304+00:00,1149
+SYNTH-00001479-00039,unchecked_return_value,high,Unchecked Return Value in money_market contract (variant 1479),Missing access control on money_market critical function,"function mint(address to, uint256 amount) public {
+    _mint(to, amount);
+}","function mint(address to, uint256 amount) public onlyRole(MINTER_ROLE) {
+    require(to != address(0), ""Invalid address"");
+    _mint(to, amount);
+}",secure-pattern,solidity,0.8.20,money_market,True,2026-08-08T00:01:52.499819+00:00,1479
+SYNTH-00007572-00013,proxy_storage_collision,critical,Proxy Storage Collision in perpetual contract (variant 7572),Integer overflow in perpetual balance calculation,"// Variant 7572: perpetual
+function addBalance(uint256 amount) public {
+    balance += amount;
+}","// Variant 7572: perpetual
+function addBalance(uint256 amount) public {
+    uint256 newBalance = balance + amount;
+    require(newBalance >= balance, ""Overflow"");
+    balance = newBalance;
+}",secure-pattern,solidity,0.8.20,perpetual,True,2026-08-08T00:01:52.549828+00:00,7572
+SYNTH-00001149-00039,erc777_reentrancy,medium,Erc777 Reentrancy in money_market contract (variant 1149),Unchecked external call in money_market allows reentrancy,"function execute(address target, bytes memory data) public {
+    target.call(data);
+}","// Variant 1149: money_market
+function execute(address target, bytes memory data) public onlyRole(EXECUTOR_ROLE) nonReentrant {
+    (bool success, bytes memory result) = target.call(data);
+    require(success, string(result));
+}",secure-pattern,solidity,0.8.20,money_market,True,2026-08-08T00:01:52.448303+00:00,1149
+SYNTH-00002964-00026,approval_race_condition,low,Approval Race Condition in yield_farming contract (variant 2964),Unprotected selfdestruct in yield_farming contract,"function destroy() public {
+    selfdestruct(payable(msg.sender));
+}","// Variant 2964: yield_farming
+function destroy() public onlyOwner {
+    emit ContractDestroyed(address(this));
+    selfdestruct(payable(owner));
+}",secure-pattern,solidity,0.8.22,yield_farming,True,2026-08-08T00:01:52.407299+00:00,2964
+SYNTH-00003790-00053,tx_origin_auth,medium,Tx Origin Auth in dao contract (variant 3790),Single-source price oracle vulnerable to manipulation in dao,"function getPrice() public view returns (uint256) {
+    return spotPrice;
+}","// Variant 3790: dao
+function getPrice() public view returns (uint256) {
+    (uint256 reserve0, uint256 reserve1, ) = pool.getReserves();
+    return reserve0 * 1e18 / reserve1;
+}",secure-pattern,solidity,0.8.19,dao,True,2026-08-08T00:01:52.433300+00:00,3790
+SYNTH-00005067-00059,sandwich_attack,low,Sandwich Attack in lending contract (variant 5067),Flash loan attack vector in lending price calculation,"function getCollateralValue() public view returns (uint256) {
+    return balanceOfPool * getPrice();
+}","// Variant 5067: lending
+function getCollateralValue() public view returns (uint256) {
+    (uint256 reserve0, uint256 reserve1, ) = pool.getReserves();
+    uint256 twapPrice = TWAP.getPrice(reserve0, reserve1);
+    return Math.min(balanceOfPool, reserve0) * twapPrice / 1e18;
+}",secure-pattern,solidity,0.8.20,lending,True,2026-08-08T00:01:52.626345+00:00,5067
+SYNTH-00001657-00031,uups_initialization_bypass,medium,Uups Initialization Bypass in options contract (variant 1657),Signature replay attack in options permit function,"// Variant 1657: options
+function permit(address owner, uint256 amount, bytes memory sig) public {
+    require(verify(sig, owner), ""Invalid sig"");
+    allowance[owner][msg.sender] = amount;
+}","function permit(address owner, address spender, uint256 amount, uint256 deadline, uint8 v, bytes32 r, bytes32 s) public {
+    require(block.timestamp <= deadline, ""Expired"");
+    bytes32 hash = keccak256(abi.encodePacked(owner, spender, amount, nonces[owner]++, deadline));
+    require(ecrecover(hash, v, r, s) == owner, ""Invalid sig"");
+    _approve(owner, spender, amount);
+}",secure-pattern,solidity,0.8.20,options,True,2026-08-08T00:01:52.496819+00:00,1657
+SYNTH-00005968-00093,storage_slot_collision,critical,Storage Slot Collision in insurance contract (variant 5968),Integer overflow in insurance balance calculation,"// Variant 5968: insurance
+function addBalance(uint256 amount) public {
+    balance += amount;
+}","function addBalance(uint256 amount) public {
+    uint256 newBalance = balance + amount;
+    require(newBalance >= balance, ""Overflow"");
+    balance = newBalance;
+}",secure-pattern,solidity,0.8.20,insurance,True,2026-08-08T00:01:52.456303+00:00,5968
+SYNTH-00009615-00038,oracle_manipulation,low,Oracle Manipulation in derivatives contract (variant 9615),Single-source price oracle vulnerable to manipulation in derivatives,"function getPrice() public view returns (uint256) {
+    return spotPrice;
+}","function getPrice() public view returns (uint256) {
+    (uint256 reserve0, uint256 reserve1, ) = pool.getReserves();
+    return reserve0 * 1e18 / reserve1;
+}",secure-pattern,solidity,0.8.22,derivatives,True,2026-08-08T00:01:52.448303+00:00,9615
+SYNTH-00009491-00036,reentrancy_no_eth,medium,Reentrancy No Eth in options contract (variant 9491),Flash loan attack vector in options price calculation,"// Variant 9491: options
+function getCollateralValue() public view returns (uint256) {
+    return balanceOfPool * getPrice();
+}","function getCollateralValue() public view returns (uint256) {
+    (uint256 reserve0, uint256 reserve1, ) = pool.getReserves();
+    uint256 twapPrice = TWAP.getPrice(reserve0, reserve1);
+    return Math.min(balanceOfPool, reserve0) * twapPrice / 1e18;
+}",reentrancy-guard,solidity,0.8.19,options,True,2026-08-08T00:01:52.432301+00:00,9491
+SYNTH-00003469-00081,tx_origin_auth,high,Tx Origin Auth in dao contract (variant 3469),tx_origin_auth vulnerability in dao contract allows unauthorized access,"function withdraw() public {
+    uint256 amount = balances[msg.sender];
+    (bool success, ) = msg.sender.call{value: amount}("""");
+    require(success);
+    balances[msg.sender] = 0;
+}","function withdraw() public nonReentrant {
+    uint256 amount = balances[msg.sender];
+    require(amount > 0, ""No balance"");
+    balances[msg.sender] = 0;
+    (bool success, ) = msg.sender.call{value: amount}("""");
+    require(success, ""Transfer failed"");
+}",secure-pattern,solidity,0.8.22,dao,True,2026-08-08T00:01:52.440304+00:00,3469
+SYNTH-00001637-00078,flash_loan_attack,medium,Flash Loan Attack in token contract (variant 1637),Single-source price oracle vulnerable to manipulation in token,"function getPrice() public view returns (uint256) {
+    return spotPrice;
+}","function getPrice() public view returns (uint256) {
+    (uint256 reserve0, uint256 reserve1, ) = pool.getReserves();
+    return reserve0 * 1e18 / reserve1;
+}",secure-pattern,solidity,0.8.22,token,True,2026-08-08T00:01:52.455305+00:00,1637
+SYNTH-00005560-00018,arbitrary_external_call,medium,Arbitrary External Call in options contract (variant 5560),Unprotected selfdestruct in options contract,"// Variant 5560: options
+function destroy() public {
+    selfdestruct(payable(msg.sender));
+}","function destroy() public onlyOwner {
+    emit ContractDestroyed(address(this));
+    selfdestruct(payable(owner));
+}",secure-pattern,solidity,0.8.19,options,True,2026-08-08T00:01:52.426301+00:00,5560
+SYNTH-00001451-00079,front_running,medium,Front Running in money_market contract (variant 1451),Integer overflow in money_market balance calculation,"function addBalance(uint256 amount) public {
+    balance += amount;
+}","function addBalance(uint256 amount) public {
+    uint256 newBalance = balance + amount;
+    require(newBalance >= balance, ""Overflow"");
+    balance = newBalance;
+}",secure-pattern,solidity,0.8.22,money_market,True,2026-08-08T00:01:52.424301+00:00,1451
+SYNTH-00007098-00056,reentrancy_read,high,Reentrancy Read in lending contract (variant 7098),Flash loan attack vector in lending price calculation,"function getCollateralValue() public view returns (uint256) {
+    return balanceOfPool * getPrice();
+}","// Variant 7098: lending
+function getCollateralValue() public view returns (uint256) {
+    (uint256 reserve0, uint256 reserve1, ) = pool.getReserves();
+    uint256 twapPrice = TWAP.getPrice(reserve0, reserve1);
+    return Math.min(balanceOfPool, reserve0) * twapPrice / 1e18;
+}",pull-over-push,solidity,0.8.19,lending,True,2026-08-08T00:01:52.460303+00:00,7098
+SYNTH-00009212-00096,storage_collision_upgrade,high,Storage Collision Upgrade in perpetual contract (variant 9212),Unprotected selfdestruct in perpetual contract,"// Variant 9212: perpetual
+function destroy() public {
+    selfdestruct(payable(msg.sender));
+}","function destroy() public onlyOwner {
+    emit ContractDestroyed(address(this));
+    selfdestruct(payable(owner));
+}",secure-pattern,solidity,0.8.22,perpetual,True,2026-08-08T00:01:52.425300+00:00,9212
+SYNTH-00008937-00070,integer_overflow,critical,Integer Overflow in perpetual contract (variant 8937),Unchecked external call in perpetual allows reentrancy,"function execute(address target, bytes memory data) public {
+    target.call(data);
+}","// Variant 8937: perpetual
+function execute(address target, bytes memory data) public onlyRole(EXECUTOR_ROLE) nonReentrant {
+    (bool success, bytes memory result) = target.call(data);
+    require(success, string(result));
+}",secure-pattern,solidity,0.8.22,perpetual,True,2026-08-08T00:01:52.458304+00:00,8937
+SYNTH-00002405-00008,unsafe_erc20_transfer,low,Unsafe Erc20 Transfer in escrow contract (variant 2405),Unprotected selfdestruct in escrow contract,"function destroy() public {
+    selfdestruct(payable(msg.sender));
+}","function destroy() public onlyOwner {
+    emit ContractDestroyed(address(this));
+    selfdestruct(payable(owner));
+}",secure-pattern,solidity,0.8.19,escrow,True,2026-08-08T00:01:52.456303+00:00,2405
+SYNTH-00001058-00072,oracle_manipulation,low,Oracle Manipulation in yield_farming contract (variant 1058),Unchecked external call in yield_farming allows reentrancy,"// Variant 1058: yield_farming
+function execute(address target, bytes memory data) public {
+    target.call(data);
+}","// Variant 1058: yield_farming
+function execute(address target, bytes memory data) public onlyRole(EXECUTOR_ROLE) nonReentrant {
+    (bool success, bytes memory result) = target.call(data);
+    require(success, string(result));
+}",secure-pattern,solidity,0.8.19,yield_farming,True,2026-08-08T00:01:52.550829+00:00,1058
+SYNTH-00007838-00083,dos_gas_limit,high,Dos Gas Limit in options contract (variant 7838),Unchecked external call in options allows reentrancy,"function execute(address target, bytes memory data) public {
+    target.call(data);
+}","function execute(address target, bytes memory data) public onlyRole(EXECUTOR_ROLE) nonReentrant {
+    (bool success, bytes memory result) = target.call(data);
+    require(success, string(result));
+}",secure-pattern,solidity,0.8.21,options,True,2026-08-08T00:01:52.446298+00:00,7838
+SYNTH-00009112-00077,uups_initialization_bypass,high,Uups Initialization Bypass in staking contract (variant 9112),Unchecked external call in staking allows reentrancy,"// Variant 9112: staking
+function execute(address target, bytes memory data) public {
+    target.call(data);
+}","// Variant 9112: staking
+function execute(address target, bytes memory data) public onlyRole(EXECUTOR_ROLE) nonReentrant {
+    (bool success, bytes memory result) = target.call(data);
+    require(success, string(result));
+}",secure-pattern,solidity,0.8.21,staking,True,2026-08-08T00:01:52.418297+00:00,9112
+SYNTH-00001880-00088,reentrancy_read,critical,Reentrancy Read in yield_farming contract (variant 1880),Unchecked external call in yield_farming allows reentrancy,"function execute(address target, bytes memory data) public {
+    target.call(data);
+}","function execute(address target, bytes memory data) public onlyRole(EXECUTOR_ROLE) nonReentrant {
+    (bool success, bytes memory result) = target.call(data);
+    require(success, string(result));
+}",checks-effects-interactions,solidity,0.8.22,yield_farming,True,2026-08-08T00:01:52.630345+00:00,1880
+SYNTH-00007838-00081,dos_gas_limit,high,Dos Gas Limit in options contract (variant 7838),Unchecked external call in options allows reentrancy,"function execute(address target, bytes memory data) public {
+    target.call(data);
+}","function execute(address target, bytes memory data) public onlyRole(EXECUTOR_ROLE) nonReentrant {
+    (bool success, bytes memory result) = target.call(data);
+    require(success, string(result));
+}",secure-pattern,solidity,0.8.21,options,True,2026-08-08T00:01:52.501820+00:00,7838
+SYNTH-00001637-00096,flash_loan_attack,medium,Flash Loan Attack in token contract (variant 1637),Single-source price oracle vulnerable to manipulation in token,"function getPrice() public view returns (uint256) {
+    return spotPrice;
+}","function getPrice() public view returns (uint256) {
+    (uint256 reserve0, uint256 reserve1, ) = pool.getReserves();
+    return reserve0 * 1e18 / reserve1;
+}",secure-pattern,solidity,0.8.22,token,True,2026-08-08T00:01:52.542820+00:00,1637
+SYNTH-00005367-00011,front_running,medium,Front Running in derivatives contract (variant 5367),Flash loan attack vector in derivatives price calculation,"function getCollateralValue() public view returns (uint256) {
+    return balanceOfPool * getPrice();
+}","function getCollateralValue() public view returns (uint256) {
+    (uint256 reserve0, uint256 reserve1, ) = pool.getReserves();
+    uint256 twapPrice = TWAP.getPrice(reserve0, reserve1);
+    return Math.min(balanceOfPool, reserve0) * twapPrice / 1e18;
+}",secure-pattern,solidity,0.8.22,derivatives,True,2026-08-08T00:01:52.428300+00:00,5367
+SYNTH-00007893-00050,integer_overflow,critical,Integer Overflow in staking contract (variant 7893),Unprotected selfdestruct in staking contract,"function destroy() public {
+    selfdestruct(payable(msg.sender));
+}","// Variant 7893: staking
+function destroy() public onlyOwner {
+    emit ContractDestroyed(address(this));
+    selfdestruct(payable(owner));
+}",secure-pattern,solidity,0.8.22,staking,True,2026-08-08T00:01:52.460303+00:00,7893
+SYNTH-00005637-00022,proxy_storage_collision,high,Proxy Storage Collision in insurance contract (variant 5637),Single-source price oracle vulnerable to manipulation in insurance,"function getPrice() public view returns (uint256) {
+    return spotPrice;
+}","function getPrice() public view returns (uint256) {
+    (uint256 reserve0, uint256 reserve1, ) = pool.getReserves();
+    return reserve0 * 1e18 / reserve1;
+}",secure-pattern,solidity,0.8.22,insurance,True,2026-08-08T00:01:52.423303+00:00,5637
+SYNTH-00003790-00061,tx_origin_auth,medium,Tx Origin Auth in dao contract (variant 3790),Single-source price oracle vulnerable to manipulation in dao,"function getPrice() public view returns (uint256) {
+    return spotPrice;
+}","// Variant 3790: dao
+function getPrice() public view returns (uint256) {
+    (uint256 reserve0, uint256 reserve1, ) = pool.getReserves();
+    return reserve0 * 1e18 / reserve1;
+}",secure-pattern,solidity,0.8.19,dao,True,2026-08-08T00:01:52.544819+00:00,3790
+SYNTH-00007572-00000,proxy_storage_collision,critical,Proxy Storage Collision in perpetual contract (variant 7572),Integer overflow in perpetual balance calculation,"// Variant 7572: perpetual
+function addBalance(uint256 amount) public {
+    balance += amount;
+}","// Variant 7572: perpetual
+function addBalance(uint256 amount) public {
+    uint256 newBalance = balance + amount;
+    require(newBalance >= balance, ""Overflow"");
+    balance = newBalance;
+}",secure-pattern,solidity,0.8.20,perpetual,True,2026-08-08T00:01:52.450305+00:00,7572
+SYNTH-00005942-00074,access_control,critical,Access Control in staking contract (variant 5942),Delegatecall vulnerability in staking proxy pattern,"// Variant 5942: staking
+function upgrade(address newImplementation) public {
+    implementation = newImplementation;
+}","function upgrade(address newImplementation) public onlyOwner {
+    require(newImplementation != address(0), ""Zero address"");
+    require(Address.isContract(newImplementation), ""Not a contract"");
+    implementation = newImplementation;
+}",secure-pattern,solidity,0.8.22,staking,True,2026-08-08T00:01:52.554829+00:00,5942
+SYNTH-00007838-00033,dos_gas_limit,high,Dos Gas Limit in options contract (variant 7838),Unchecked external call in options allows reentrancy,"function execute(address target, bytes memory data) public {
+    target.call(data);
+}","function execute(address target, bytes memory data) public onlyRole(EXECUTOR_ROLE) nonReentrant {
+    (bool success, bytes memory result) = target.call(data);
+    require(success, string(result));
+}",secure-pattern,solidity,0.8.21,options,True,2026-08-08T00:01:52.552828+00:00,7838
+SYNTH-00003978-00081,unsafe_erc20_transfer,medium,Unsafe Erc20 Transfer in amm contract (variant 3978),Signature replay attack in amm permit function,"function permit(address owner, uint256 amount, bytes memory sig) public {
+    require(verify(sig, owner), ""Invalid sig"");
+    allowance[owner][msg.sender] = amount;
+}","function permit(address owner, address spender, uint256 amount, uint256 deadline, uint8 v, bytes32 r, bytes32 s) public {
+    require(block.timestamp <= deadline, ""Expired"");
+    bytes32 hash = keccak256(abi.encodePacked(owner, spender, amount, nonces[owner]++, deadline));
+    require(ecrecover(hash, v, r, s) == owner, ""Invalid sig"");
+    _approve(owner, spender, amount);
+}",secure-pattern,solidity,0.8.20,amm,True,2026-08-08T00:01:52.458304+00:00,3978
+SYNTH-00009941-00064,reentrancy_no_eth,low,Reentrancy No Eth in options contract (variant 9941),Single-source price oracle vulnerable to manipulation in options,"function getPrice() public view returns (uint256) {
+    return spotPrice;
+}","function getPrice() public view returns (uint256) {
+    (uint256 reserve0, uint256 reserve1, ) = pool.getReserves();
+    return reserve0 * 1e18 / reserve1;
+}",pull-over-push,solidity,0.8.19,options,True,2026-08-08T00:01:52.547828+00:00,9941
+SYNTH-00007759-00087,delegatecall_proxy,critical,Delegatecall Proxy in dao contract (variant 7759),Flash loan attack vector in dao price calculation,"// Variant 7759: dao
+function getCollateralValue() public view returns (uint256) {
+    return balanceOfPool * getPrice();
+}","function getCollateralValue() public view returns (uint256) {
+    (uint256 reserve0, uint256 reserve1, ) = pool.getReserves();
+    uint256 twapPrice = TWAP.getPrice(reserve0, reserve1);
+    return Math.min(balanceOfPool, reserve0) * twapPrice / 1e18;
+}",secure-pattern,solidity,0.8.22,dao,True,2026-08-08T00:01:52.437300+00:00,7759
+SYNTH-00007098-00085,reentrancy_read,high,Reentrancy Read in lending contract (variant 7098),Flash loan attack vector in lending price calculation,"function getCollateralValue() public view returns (uint256) {
+    return balanceOfPool * getPrice();
+}","// Variant 7098: lending
+function getCollateralValue() public view returns (uint256) {
+    (uint256 reserve0, uint256 reserve1, ) = pool.getReserves();
+    uint256 twapPrice = TWAP.getPrice(reserve0, reserve1);
+    return Math.min(balanceOfPool, reserve0) * twapPrice / 1e18;
+}",pull-over-push,solidity,0.8.19,lending,True,2026-08-08T00:01:52.627343+00:00,7098
+SYNTH-00003819-00084,delegatecall_proxy,low,Delegatecall Proxy in perpetual contract (variant 3819),Integer overflow in perpetual balance calculation,"function addBalance(uint256 amount) public {
+    balance += amount;
+}","function addBalance(uint256 amount) public {
+    uint256 newBalance = balance + amount;
+    require(newBalance >= balance, ""Overflow"");
+    balance = newBalance;
+}",secure-pattern,solidity,0.8.20,perpetual,True,2026-08-08T00:01:52.422300+00:00,3819
+SYNTH-00005067-00087,sandwich_attack,low,Sandwich Attack in lending contract (variant 5067),Flash loan attack vector in lending price calculation,"function getCollateralValue() public view returns (uint256) {
+    return balanceOfPool * getPrice();
+}","// Variant 5067: lending
+function getCollateralValue() public view returns (uint256) {
+    (uint256 reserve0, uint256 reserve1, ) = pool.getReserves();
+    uint256 twapPrice = TWAP.getPrice(reserve0, reserve1);
+    return Math.min(balanceOfPool, reserve0) * twapPrice / 1e18;
+}",secure-pattern,solidity,0.8.20,lending,True,2026-08-08T00:01:52.419301+00:00,5067
+SYNTH-00006121-00008,timestamp_dependence,critical,Timestamp Dependence in governance contract (variant 6121),Unchecked external call in governance allows reentrancy,"function execute(address target, bytes memory data) public {
+    target.call(data);
+}","// Variant 6121: governance
+function execute(address target, bytes memory data) public onlyRole(EXECUTOR_ROLE) nonReentrant {
+    (bool success, bytes memory result) = target.call(data);
+    require(success, string(result));
+}",secure-pattern,solidity,0.8.22,governance,True,2026-08-08T00:01:52.622344+00:00,6121
+SYNTH-00001657-00033,uups_initialization_bypass,medium,Uups Initialization Bypass in options contract (variant 1657),Signature replay attack in options permit function,"// Variant 1657: options
+function permit(address owner, uint256 amount, bytes memory sig) public {
+    require(verify(sig, owner), ""Invalid sig"");
+    allowance[owner][msg.sender] = amount;
+}","function permit(address owner, address spender, uint256 amount, uint256 deadline, uint8 v, bytes32 r, bytes32 s) public {
+    require(block.timestamp <= deadline, ""Expired"");
+    bytes32 hash = keccak256(abi.encodePacked(owner, spender, amount, nonces[owner]++, deadline));
+    require(ecrecover(hash, v, r, s) == owner, ""Invalid sig"");
+    _approve(owner, spender, amount);
+}",secure-pattern,solidity,0.8.20,options,True,2026-08-08T00:01:52.441300+00:00,1657
+SYNTH-00001880-00085,reentrancy_read,critical,Reentrancy Read in yield_farming contract (variant 1880),Unchecked external call in yield_farming allows reentrancy,"function execute(address target, bytes memory data) public {
+    target.call(data);
+}","function execute(address target, bytes memory data) public onlyRole(EXECUTOR_ROLE) nonReentrant {
+    (bool success, bytes memory result) = target.call(data);
+    require(success, string(result));
+}",checks-effects-interactions,solidity,0.8.22,yield_farming,True,2026-08-08T00:01:52.450305+00:00,1880
+SYNTH-00004018-00026,timestamp_dependence,high,Timestamp Dependence in insurance contract (variant 4018),Integer overflow in insurance balance calculation,"// Variant 4018: insurance
+function addBalance(uint256 amount) public {
+    balance += amount;
+}","function addBalance(uint256 amount) public {
+    uint256 newBalance = balance + amount;
+    require(newBalance >= balance, ""Overflow"");
+    balance = newBalance;
+}",secure-pattern,solidity,0.8.20,insurance,True,2026-08-08T00:01:52.423303+00:00,4018
+SYNTH-00009269-00053,signature_replay,medium,Signature Replay in nft_marketplace contract (variant 9269),Flash loan attack vector in nft_marketplace price calculation,"// Variant 9269: nft_marketplace
+function getCollateralValue() public view returns (uint256) {
+    return balanceOfPool * getPrice();
+}","function getCollateralValue() public view returns (uint256) {
+    (uint256 reserve0, uint256 reserve1, ) = pool.getReserves();
+    uint256 twapPrice = TWAP.getPrice(reserve0, reserve1);
+    return Math.min(balanceOfPool, reserve0) * twapPrice / 1e18;
+}",secure-pattern,solidity,0.8.21,nft_marketplace,True,2026-08-08T00:01:52.442300+00:00,9269
+SYNTH-00005942-00013,access_control,critical,Access Control in staking contract (variant 5942),Delegatecall vulnerability in staking proxy pattern,"// Variant 5942: staking
+function upgrade(address newImplementation) public {
+    implementation = newImplementation;
+}","function upgrade(address newImplementation) public onlyOwner {
+    require(newImplementation != address(0), ""Zero address"");
+    require(Address.isContract(newImplementation), ""Not a contract"");
+    implementation = newImplementation;
+}",secure-pattern,solidity,0.8.22,staking,True,2026-08-08T00:01:52.425300+00:00,5942
+SYNTH-00009615-00057,oracle_manipulation,low,Oracle Manipulation in derivatives contract (variant 9615),Single-source price oracle vulnerable to manipulation in derivatives,"function getPrice() public view returns (uint256) {
+    return spotPrice;
+}","function getPrice() public view returns (uint256) {
+    (uint256 reserve0, uint256 reserve1, ) = pool.getReserves();
+    return reserve0 * 1e18 / reserve1;
+}",secure-pattern,solidity,0.8.22,derivatives,True,2026-08-08T00:01:52.500819+00:00,9615
+SYNTH-00003819-00003,delegatecall_proxy,low,Delegatecall Proxy in perpetual contract (variant 3819),Integer overflow in perpetual balance calculation,"function addBalance(uint256 amount) public {
+    balance += amount;
+}","function addBalance(uint256 amount) public {
+    uint256 newBalance = balance + amount;
+    require(newBalance >= balance, ""Overflow"");
+    balance = newBalance;
+}",secure-pattern,solidity,0.8.20,perpetual,True,2026-08-08T00:01:52.554829+00:00,3819
+SYNTH-00006143-00094,integer_overflow,medium,Integer Overflow in dex contract (variant 6143),integer_overflow vulnerability in dex contract allows unauthorized access,"function withdraw() public {
+    uint256 amount = balances[msg.sender];
+    (bool success, ) = msg.sender.call{value: amount}("""");
+    require(success);
+    balances[msg.sender] = 0;
+}","function withdraw() public nonReentrant {
+    uint256 amount = balances[msg.sender];
+    require(amount > 0, ""No balance"");
+    balances[msg.sender] = 0;
+    (bool success, ) = msg.sender.call{value: amount}("""");
+    require(success, ""Transfer failed"");
+}",secure-pattern,solidity,0.8.22,dex,True,2026-08-08T00:01:52.458304+00:00,6143
+SYNTH-00000368-00066,flash_loan_attack,low,Flash Loan Attack in cross_chain contract (variant 368),Flash loan attack vector in cross_chain price calculation,"function getCollateralValue() public view returns (uint256) {
+    return balanceOfPool * getPrice();
+}","function getCollateralValue() public view returns (uint256) {
+    (uint256 reserve0, uint256 reserve1, ) = pool.getReserves();
+    uint256 twapPrice = TWAP.getPrice(reserve0, reserve1);
+    return Math.min(balanceOfPool, reserve0) * twapPrice / 1e18;
+}",secure-pattern,solidity,0.8.21,cross_chain,True,2026-08-08T00:01:52.433300+00:00,368
+SYNTH-00007572-00016,proxy_storage_collision,critical,Proxy Storage Collision in perpetual contract (variant 7572),Integer overflow in perpetual balance calculation,"// Variant 7572: perpetual
+function addBalance(uint256 amount) public {
+    balance += amount;
+}","// Variant 7572: perpetual
+function addBalance(uint256 amount) public {
+    uint256 newBalance = balance + amount;
+    require(newBalance >= balance, ""Overflow"");
+    balance = newBalance;
+}",secure-pattern,solidity,0.8.20,perpetual,True,2026-08-08T00:01:52.459302+00:00,7572
+SYNTH-00001149-00055,erc777_reentrancy,medium,Erc777 Reentrancy in money_market contract (variant 1149),Unchecked external call in money_market allows reentrancy,"function execute(address target, bytes memory data) public {
+    target.call(data);
+}","// Variant 1149: money_market
+function execute(address target, bytes memory data) public onlyRole(EXECUTOR_ROLE) nonReentrant {
+    (bool success, bytes memory result) = target.call(data);
+    require(success, string(result));
+}",secure-pattern,solidity,0.8.20,money_market,True,2026-08-08T00:01:52.457303+00:00,1149
+SYNTH-00005245-00058,oracle_manipulation,low,Oracle Manipulation in lending contract (variant 5245),tx.origin authentication bypass in lending,"// Variant 5245: lending
+function transferOwnership(address newOwner) public {
+    require(tx.origin == owner, ""Not owner"");
+    owner = newOwner;
+}","function transferOwnership(address newOwner) public onlyOwner {
+    require(newOwner != address(0), ""Zero address"");
+    emit OwnershipTransferred(owner, newOwner);
+    owner = newOwner;
+}",secure-pattern,solidity,0.8.21,lending,True,2026-08-08T00:01:52.439300+00:00,5245
+SYNTH-00006346-00045,reentrancy,medium,Reentrancy in dao contract (variant 6346),Unprotected selfdestruct in dao contract,"function destroy() public {
+    selfdestruct(payable(msg.sender));
+}","function destroy() public onlyOwner {
+    emit ContractDestroyed(address(this));
+    selfdestruct(payable(owner));
+}",pull-over-push,solidity,0.8.22,dao,True,2026-08-08T00:01:52.623345+00:00,6346
+SYNTH-00000367-00093,unsafe_erc20_transfer,critical,Unsafe Erc20 Transfer in staking contract (variant 367),Unprotected selfdestruct in staking contract,"// Variant 367: staking
+function destroy() public {
+    selfdestruct(payable(msg.sender));
+}","function destroy() public onlyOwner {
+    emit ContractDestroyed(address(this));
+    selfdestruct(payable(owner));
+}",secure-pattern,solidity,0.8.22,staking,True,2026-08-08T00:01:52.447297+00:00,367
+SYNTH-00006552-00074,oracle_manipulation,critical,Oracle Manipulation in bridge contract (variant 6552),tx.origin authentication bypass in bridge,"function transferOwnership(address newOwner) public {
+    require(tx.origin == owner, ""Not owner"");
+    owner = newOwner;
+}","function transferOwnership(address newOwner) public onlyOwner {
+    require(newOwner != address(0), ""Zero address"");
+    emit OwnershipTransferred(owner, newOwner);
+    owner = newOwner;
+}",secure-pattern,solidity,0.8.20,bridge,True,2026-08-08T00:01:52.627343+00:00,6552
+SYNTH-00008937-00099,integer_overflow,critical,Integer Overflow in perpetual contract (variant 8937),Unchecked external call in perpetual allows reentrancy,"function execute(address target, bytes memory data) public {
+    target.call(data);
+}","// Variant 8937: perpetual
+function execute(address target, bytes memory data) public onlyRole(EXECUTOR_ROLE) nonReentrant {
+    (bool success, bytes memory result) = target.call(data);
+    require(success, string(result));
+}",secure-pattern,solidity,0.8.22,perpetual,True,2026-08-08T00:01:52.624344+00:00,8937
+SYNTH-00004914-00054,timestamp_dependence,critical,Timestamp Dependence in nft_marketplace contract (variant 4914),Signature replay attack in nft_marketplace permit function,"function permit(address owner, uint256 amount, bytes memory sig) public {
+    require(verify(sig, owner), ""Invalid sig"");
+    allowance[owner][msg.sender] = amount;
+}","function permit(address owner, address spender, uint256 amount, uint256 deadline, uint8 v, bytes32 r, bytes32 s) public {
+    require(block.timestamp <= deadline, ""Expired"");
+    bytes32 hash = keccak256(abi.encodePacked(owner, spender, amount, nonces[owner]++, deadline));
+    require(ecrecover(hash, v, r, s) == owner, ""Invalid sig"");
+    _approve(owner, spender, amount);
+}",secure-pattern,solidity,0.8.21,nft_marketplace,True,2026-08-08T00:01:52.620342+00:00,4914
+SYNTH-00007098-00092,reentrancy_read,high,Reentrancy Read in lending contract (variant 7098),Flash loan attack vector in lending price calculation,"function getCollateralValue() public view returns (uint256) {
+    return balanceOfPool * getPrice();
+}","// Variant 7098: lending
+function getCollateralValue() public view returns (uint256) {
+    (uint256 reserve0, uint256 reserve1, ) = pool.getReserves();
+    uint256 twapPrice = TWAP.getPrice(reserve0, reserve1);
+    return Math.min(balanceOfPool, reserve0) * twapPrice / 1e18;
+}",pull-over-push,solidity,0.8.19,lending,True,2026-08-08T00:01:52.422300+00:00,7098
+SYNTH-00005942-00095,access_control,critical,Access Control in staking contract (variant 5942),Delegatecall vulnerability in staking proxy pattern,"// Variant 5942: staking
+function upgrade(address newImplementation) public {
+    implementation = newImplementation;
+}","function upgrade(address newImplementation) public onlyOwner {
+    require(newImplementation != address(0), ""Zero address"");
+    require(Address.isContract(newImplementation), ""Not a contract"");
+    implementation = newImplementation;
+}",secure-pattern,solidity,0.8.22,staking,True,2026-08-08T00:01:52.551828+00:00,5942
+SYNTH-00006552-00000,oracle_manipulation,critical,Oracle Manipulation in bridge contract (variant 6552),tx.origin authentication bypass in bridge,"function transferOwnership(address newOwner) public {
+    require(tx.origin == owner, ""Not owner"");
+    owner = newOwner;
+}","function transferOwnership(address newOwner) public onlyOwner {
+    require(newOwner != address(0), ""Zero address"");
+    emit OwnershipTransferred(owner, newOwner);
+    owner = newOwner;
+}",secure-pattern,solidity,0.8.20,bridge,True,2026-08-08T00:01:52.554829+00:00,6552
+SYNTH-00005245-00000,oracle_manipulation,low,Oracle Manipulation in lending contract (variant 5245),tx.origin authentication bypass in lending,"// Variant 5245: lending
+function transferOwnership(address newOwner) public {
+    require(tx.origin == owner, ""Not owner"");
+    owner = newOwner;
+}","function transferOwnership(address newOwner) public onlyOwner {
+    require(newOwner != address(0), ""Zero address"");
+    emit OwnershipTransferred(owner, newOwner);
+    owner = newOwner;
+}",secure-pattern,solidity,0.8.21,lending,True,2026-08-08T00:01:52.434300+00:00,5245
+SYNTH-00002964-00087,approval_race_condition,low,Approval Race Condition in yield_farming contract (variant 2964),Unprotected selfdestruct in yield_farming contract,"function destroy() public {
+    selfdestruct(payable(msg.sender));
+}","// Variant 2964: yield_farming
+function destroy() public onlyOwner {
+    emit ContractDestroyed(address(this));
+    selfdestruct(payable(owner));
+}",secure-pattern,solidity,0.8.22,yield_farming,True,2026-08-08T00:01:52.542820+00:00,2964
+SYNTH-00000347-00086,storage_collision_upgrade,critical,Storage Collision Upgrade in perpetual contract (variant 347),Single-source price oracle vulnerable to manipulation in perpetual,"function getPrice() public view returns (uint256) {
+    return spotPrice;
+}","// Variant 347: perpetual
+function getPrice() public view returns (uint256) {
+    (uint256 reserve0, uint256 reserve1, ) = pool.getReserves();
+    return reserve0 * 1e18 / reserve1;
+}",secure-pattern,solidity,0.8.22,perpetual,True,2026-08-08T00:01:52.630345+00:00,347
+SYNTH-00000321-00002,dos_gas_limit,low,Dos Gas Limit in amm contract (variant 321),Signature replay attack in amm permit function,"function permit(address owner, uint256 amount, bytes memory sig) public {
+    require(verify(sig, owner), ""Invalid sig"");
+    allowance[owner][msg.sender] = amount;
+}","function permit(address owner, address spender, uint256 amount, uint256 deadline, uint8 v, bytes32 r, bytes32 s) public {
+    require(block.timestamp <= deadline, ""Expired"");
+    bytes32 hash = keccak256(abi.encodePacked(owner, spender, amount, nonces[owner]++, deadline));
+    require(ecrecover(hash, v, r, s) == owner, ""Invalid sig"");
+    _approve(owner, spender, amount);
+}",secure-pattern,solidity,0.8.22,amm,True,2026-08-08T00:01:52.443300+00:00,321
+SYNTH-00005367-00069,front_running,medium,Front Running in derivatives contract (variant 5367),Flash loan attack vector in derivatives price calculation,"function getCollateralValue() public view returns (uint256) {
+    return balanceOfPool * getPrice();
+}","function getCollateralValue() public view returns (uint256) {
+    (uint256 reserve0, uint256 reserve1, ) = pool.getReserves();
+    uint256 twapPrice = TWAP.getPrice(reserve0, reserve1);
+    return Math.min(balanceOfPool, reserve0) * twapPrice / 1e18;
+}",secure-pattern,solidity,0.8.22,derivatives,True,2026-08-08T00:01:52.433300+00:00,5367
+SYNTH-00005245-00093,oracle_manipulation,low,Oracle Manipulation in lending contract (variant 5245),tx.origin authentication bypass in lending,"// Variant 5245: lending
+function transferOwnership(address newOwner) public {
+    require(tx.origin == owner, ""Not owner"");
+    owner = newOwner;
+}","function transferOwnership(address newOwner) public onlyOwner {
+    require(newOwner != address(0), ""Zero address"");
+    emit OwnershipTransferred(owner, newOwner);
+    owner = newOwner;
+}",secure-pattern,solidity,0.8.21,lending,True,2026-08-08T00:01:52.501820+00:00,5245
+SYNTH-00005029-00054,reentrancy,low,Reentrancy in dex contract (variant 5029),reentrancy vulnerability in dex contract allows unauthorized access,"function withdraw() public {
+    uint256 amount = balances[msg.sender];
+    (bool success, ) = msg.sender.call{value: amount}("""");
+    require(success);
+    balances[msg.sender] = 0;
+}","function withdraw() public nonReentrant {
+    uint256 amount = balances[msg.sender];
+    require(amount > 0, ""No balance"");
+    balances[msg.sender] = 0;
+    (bool success, ) = msg.sender.call{value: amount}("""");
+    require(success, ""Transfer failed"");
+}",checks-effects-interactions,solidity,0.8.21,dex,True,2026-08-08T00:01:52.460303+00:00,5029
+SYNTH-00005470-00005,oracle_manipulation,critical,Oracle Manipulation in lending contract (variant 5470),oracle_manipulation vulnerability in lending contract allows unauthorized access,"function withdraw() public {
+    uint256 amount = balances[msg.sender];
+    (bool success, ) = msg.sender.call{value: amount}("""");
+    require(success);
+    balances[msg.sender] = 0;
+}","// Variant 5470: lending
+function withdraw() public nonReentrant {
+    uint256 amount = balances[msg.sender];
+    require(amount > 0, ""No balance"");
+    balances[msg.sender] = 0;
+    (bool success, ) = msg.sender.call{value: amount}("""");
+    require(success, ""Transfer failed"");
+}",secure-pattern,solidity,0.8.20,lending,True,2026-08-08T00:01:52.447297+00:00,5470
+SYNTH-00002405-00021,unsafe_erc20_transfer,low,Unsafe Erc20 Transfer in escrow contract (variant 2405),Unprotected selfdestruct in escrow contract,"function destroy() public {
+    selfdestruct(payable(msg.sender));
+}","function destroy() public onlyOwner {
+    emit ContractDestroyed(address(this));
+    selfdestruct(payable(owner));
+}",secure-pattern,solidity,0.8.19,escrow,True,2026-08-08T00:01:52.555828+00:00,2405
+SYNTH-00007441-00018,reentrancy_read,critical,Reentrancy Read in dex contract (variant 7441),reentrancy_read vulnerability in dex contract allows unauthorized access,"// Variant 7441: dex
+function withdraw() public {
+    uint256 amount = balances[msg.sender];
+    (bool success, ) = msg.sender.call{value: amount}("""");
+    require(success);
+    balances[msg.sender] = 0;
+}","// Variant 7441: dex
+function withdraw() public nonReentrant {
+    uint256 amount = balances[msg.sender];
+    require(amount > 0, ""No balance"");
+    balances[msg.sender] = 0;
+    (bool success, ) = msg.sender.call{value: amount}("""");
+    require(success, ""Transfer failed"");
+}",checks-effects-interactions,solidity,0.8.19,dex,True,2026-08-08T00:01:52.625341+00:00,7441
+SYNTH-00006905-00081,dos_block_timestamp,critical,Dos Block Timestamp in dao contract (variant 6905),Unchecked external call in dao allows reentrancy,"function execute(address target, bytes memory data) public {
+    target.call(data);
+}","// Variant 6905: dao
+function execute(address target, bytes memory data) public onlyRole(EXECUTOR_ROLE) nonReentrant {
+    (bool success, bytes memory result) = target.call(data);
+    require(success, string(result));
+}",secure-pattern,solidity,0.8.19,dao,True,2026-08-08T00:01:52.545820+00:00,6905
+SYNTH-00002608-00099,arbitrary_external_call,high,Arbitrary External Call in dex contract (variant 2608),arbitrary_external_call vulnerability in dex contract allows unauthorized access,"function withdraw() public {
+    uint256 amount = balances[msg.sender];
+    (bool success, ) = msg.sender.call{value: amount}("""");
+    require(success);
+    balances[msg.sender] = 0;
+}","function withdraw() public nonReentrant {
+    uint256 amount = balances[msg.sender];
+    require(amount > 0, ""No balance"");
+    balances[msg.sender] = 0;
+    (bool success, ) = msg.sender.call{value: amount}("""");
+    require(success, ""Transfer failed"");
+}",secure-pattern,solidity,0.8.21,dex,True,2026-08-08T00:01:52.440304+00:00,2608
+SYNTH-00005029-00004,reentrancy,low,Reentrancy in dex contract (variant 5029),reentrancy vulnerability in dex contract allows unauthorized access,"function withdraw() public {
+    uint256 amount = balances[msg.sender];
+    (bool success, ) = msg.sender.call{value: amount}("""");
+    require(success);
+    balances[msg.sender] = 0;
+}","function withdraw() public nonReentrant {
+    uint256 amount = balances[msg.sender];
+    require(amount > 0, ""No balance"");
+    balances[msg.sender] = 0;
+    (bool success, ) = msg.sender.call{value: amount}("""");
+    require(success, ""Transfer failed"");
+}",checks-effects-interactions,solidity,0.8.21,dex,True,2026-08-08T00:01:52.625341+00:00,5029
