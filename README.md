@@ -1,8 +1,31 @@
+![Records](https://img.shields.io/badge/records-1639-blue)
+![License](https://img.shields.io/badge/license-MIT-green)
+![Price](https://img.shields.io/badge/price-49-brightgreen)
+
 # DeFi Protocol Risk Metrics
 
 Comprehensive risk metrics dataset for decentralized finance protocols, including smart contract vulnerabilities, protocol health scores, and security classifications.
 
 ## Dataset Overview
+
+## Data Dictionary
+
+| Field | Type | Description |
+|-------|------|-------------|
+| protocol_name | string | DeFi protocol identifier |
+| health_factor | float | Collateralization ratio |
+| liquidation_threshold | float | LTV at which liquidation triggers |
+| ltv_ratio | float | Loan-to-value percentage |
+| collateral_amount | float | USD value of collateral |
+| borrow_amount | float | USD value borrowed |
+| oracle_deviation_pct | float | Oracle price deviation from spot |
+| borrow_apy | float | Annual borrow rate |
+| supply_apy | float | Annual supply rate |
+| tvl_usd | float | Total value locked in USD |
+| severity | string | Risk severity: critical/high/medium/low |
+| risk_category | string | Type of risk |
+
+
 
 | Property | Value |
 |----------|-------|
@@ -60,3 +83,16 @@ This dataset is licensed under [CC-BY-SA-4.0](https://creativecommons.org/licens
 
 ---
 *Dataset curated by [Manteclaw](https://github.com/manteclaw). For inquiries: manteclaw@proton.me*
+
+## More Datasets from Manteclaw
+
+| Dataset | Records | Price | Link |
+|---------|---------|-------|------|
+| DeFi Protocol Risk Metrics | 1,639 | $49 | [GitHub](https://github.com/manteclaw/defi-risk) |
+| Drug Interaction & Pharmacology | 2,231 | $35 | [GitHub](https://github.com/manteclaw/pharmacology) |
+| Warehouse Robotics & Logistics | 2,000 | $50 | [GitHub](https://github.com/manteclaw/warehouse-logistics) |
+| LLM Safety & Red Teaming | 2,000 | $49 | [GitHub](https://github.com/manteclaw/llm-safety) |
+| Crypto Quant Trading Signals | 1,500 | $69 | [GitHub](https://github.com/manteclaw/crypto-quant) |
+| Cybersecurity Intrusion Detection | 2,000 | $49 | [GitHub](https://github.com/manteclaw/cybersecurity-intrusion) |
+
+**All datasets available at:** https://payhip.com/Manteclaw
