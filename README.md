@@ -15,7 +15,7 @@ Comprehensive risk metrics dataset for decentralized finance protocols, includin
 
 The complete dataset (3,000 records) is available for purchase:
 
-- **Store:** [https://manteclaw.gumroad.com](https://manteclaw.gumroad.com)
+- **Store:** [https://payhip.com/Manteclaw](https://payhip.com/Manteclaw)
 - **Email:** manteclaw@proton.me
 
 ## Files
@@ -54,7 +54,7 @@ This dataset is licensed under [CC-BY-SA-4.0](https://creativecommons.org/licens
   year         = {2026},
   url          = {https://github.com/manteclaw/defi-risk},
   license      = {CC-BY-SA-4.0},
-  note         = {Sample dataset. Full version available at https://manteclaw.gumroad.com},
+  note         = {Sample dataset. Full version available at https://payhip.com/Manteclaw},
 }
 ```
 
